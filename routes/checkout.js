@@ -8,18 +8,6 @@ var gateway = braintree.connect({
   publicKey: '48fyb5ymn75wc9tc',
   privateKey: '852d692a0cc251222382013e24df8244',
 });
-
-
-router.get('/token', function (req, res, ) {
-
-  gateway.clientToken.generate({}, function (err, response) {
-    var client_token = response.clientToken;
-    console.log("SERVER_SIDE" + " " + client_token);
-    res.send(client_token);
-  });
-
-});
-
 router.post('/', function (req, res, next) {
 
   // Use the payment method nonce here
@@ -32,7 +20,7 @@ router.post('/', function (req, res, next) {
       // This option requests the funds from the transaction
       // once it has been authorized successfully
       submitForSettlement: true,
-     
+
     },
     //Kount 
     deviceData: req.body.device_data
@@ -47,6 +35,8 @@ router.post('/', function (req, res, next) {
       res.status(500).send(error);
     }
   });
+
+
 
 
 });
