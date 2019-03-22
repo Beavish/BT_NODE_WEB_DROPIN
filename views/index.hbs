@@ -1,8 +1,10 @@
+ <li><a href="/subscription">Make A Subscription</a></li>
 <div class="container">
+  
   <form id="myForm">
     <button id="customer">Create Customer
-</div>
-</form>
+      <button id="Update">Update Customer
+  </form>
 </div>
 
 <div id="dropin-wrapper">
@@ -31,125 +33,137 @@
     .done(function (result) {
       client_token = result;
       console.log(client_token);
- 
-  
-  var button = document.querySelector('#submit-button');
-
-  braintree.dropin.create({
-    // Insert your token key here 
-    authorization: client_token,
-    container: '#dropin-container',
-    threeDSecure: {
-      amount: '10.00',
-    },
-    paypal: {
-      flow: 'vault',
-
-    },
-    dataCollector: {
-      kount: true,// Required if Kount fraud data collection is enabled
-      paypal: true // pypl
-    }
 
 
-  }, function (createErr, instance) {
+      var button = document.querySelector('#submit-button');
 
-    if (client_token != null) {
-      // form first name
-      firstname = document.createElement('input');
-      firstname.name = 'firstname';
-      firstname.type = 'visible';
-      form.appendChild(firstname);
+      braintree.dropin.create({
+        // Insert your token key here 
+        authorization: client_token,
+        container: '#dropin-container',
+        threeDSecure: {
+          amount: '10.00',
+        },
+        paypal: {
+          flow: 'vault',
 
-      // form last name
-      lastname = document.createElement('input');
-      lastname.name = 'lastname';
-      lastname.type = 'visible';
-      form.appendChild(lastname);
-
-      // form email
-      email = document.createElement('input');
-      email.name = 'email';
-      email.type = 'visible';
-      form.appendChild(email);
-
-      // form phone
-      phone = document.createElement('input');
-      phone.name = 'firstname';
-      phone.type = 'visible';
-      form.appendChild(phone);
-    }
+        },
+        dataCollector: {
+          kount: true,// Required if Kount fraud data collection is enabled
+          paypal: true // pypl
+        }
 
 
+      }, function (createErr, instance) {
 
+        if (client_token != null) {
+          // form first name
+          firstname = document.createElement('input');
+          firstname.name = 'firstname';
+          firstname.type = 'visible';
+          form.appendChild(firstname);
 
-    button.addEventListener('click', function () {
-      fname = firstname.value;
-      lname = lastname.value;
-      mail = email.value;
-      phno = phone.value;
-      
-      instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
+          // form last name
+          lastname = document.createElement('input');
+          lastname.name = 'lastname';
+          lastname.type = 'visible';
+          form.appendChild(lastname);
 
-        // When the user clicks on the 'Submit payment' button this code will send the
-        console.log("*******************************************************************" + "" + payload.nonce);
-        //form
-        //deviceDataInput.value = payload.deviceData;
-        console.log(JSON.stringify(payload.deviceData) + " " + "DEVICE_DATA_INPUT")
+          // form email
+          email = document.createElement('input');
+          email.name = 'email';
+          email.type = 'visible';
+          form.appendChild(email);
+
+          // form phone
+          phone = document.createElement('input');
+          phone.name = 'firstname';
+          phone.type = 'visible';
+          form.appendChild(phone);
+        }
 
 
 
-        // encrypted payment information in a variable called a payment method nonce
-        $.ajax({
-          type: 'POST',
-          url: '/checkout',
-          //pass data with the post call 
-          data: { 'paymentMethodNonce': payload.nonce, 'device_data': payload.deviceData }
-        }).done(function (result) {
-          // Tear down the Drop-in UI
-          instance.teardown(function (teardownErr) {
-            if (teardownErr) {
-              console.error('Could not tear down Drop-in UI!');
-            } else {
-              console.info('Drop-in UI has been torn down!');
-              // Remove the 'Submit payment' button
-              $('#submit-button').remove();
-            }
+
+        button.addEventListener('click', function () {
+          fname = firstname.value;
+          lname = lastname.value;
+          mail = email.value;
+          phno = phone.value;
+
+          instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
+
+            // When the user clicks on the 'Submit payment' button this code will send the
+            console.log("*******************************************************************" + "" + payload.nonce);
+            //form
+            //deviceDataInput.value = payload.deviceData;
+            console.log(JSON.stringify(payload.deviceData) + " " + "DEVICE_DATA_INPUT")
+
+
+
+            // encrypted payment information in a variable called a payment method nonce
+            $.ajax({
+              type: 'POST',
+              url: '/checkout',
+              //pass data with the post call 
+              data: { 'paymentMethodNonce': payload.nonce, 'device_data': payload.deviceData }
+            }).done(function (result) {
+              // Tear down the Drop-in UI
+              instance.teardown(function (teardownErr) {
+                if (teardownErr) {
+                  console.error('Could not tear down Drop-in UI!');
+                } else {
+                  console.info('Drop-in UI has been torn down!');
+                  // Remove the 'Submit payment' button
+                  $('#submit-button').remove();
+                }
+              });
+
+
+
+              if (result.success) {
+                //$('#checkout-message').html('<h1>Success</h1><p>Your Drop-in UI is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>');
+                $('#customer').show();
+                //subsc
+
+                //sub--end
+              } else {
+                console.log(result);
+                $('#checkout-message').html('<h1>Error</h1><p>Check your console.</p>');
+              }
+            });
+
+            // end of Ajax post call 
+
+          });//end of request payment/nonce creation 
+
+
+        });//end of button onclick listener
+        $('#customer').on('click', function () {
+          instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
+
+            alert(fname);
+            alert(payload.nonce);
+            $.ajax({
+              type: 'POST',
+              url: '/customer',
+              //pass data with the post call 
+              data: { 'firstname': fname, 'lastname': lname, 'email': mail, 'phone': phno, 'paymentMethodNonce': payload.nonce }
+            }).done(function (result) {
+
+
+            });
           });
-
-
-
-          if (result.success) {
-            //$('#checkout-message').html('<h1>Success</h1><p>Your Drop-in UI is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>');
-            $('#customer').show();
-          } else {
-            console.log(result);
-            $('#checkout-message').html('<h1>Error</h1><p>Check your console.</p>');
-          }
         });
 
-        // end of Ajax post call 
-
-      });//end of request payment/nonce creation 
 
 
-      $('#customer').on('click', function () {
-        alert(fname);
-        $.ajax({
-          type: 'POST',
-          url: '/customer/customer',
-          //pass data with the post call 
-          data: { 'firstname': fname, 'lastname': lname, 'email': mail, 'phone': phno }
-        }).done(function (result) {
-          $('#checkout-message').html('<h1>Success</h1><p>Your Drop-in UI is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>');
-        });
-      });
 
 
-    });//end of button onclick listener
 
-  }); // end of braintree dropin create. 
 
-});// end of inital ajax call that drop in relies on and token
+      }); // end of braintree dropin create. 
+
+    });// end of inital ajax call that drop in relies on and token
 
 </script>

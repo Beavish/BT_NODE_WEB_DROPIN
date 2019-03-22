@@ -20,7 +20,8 @@ router.post('/', function (req, res, next) {
       // This option requests the funds from the transaction
       // once it has been authorized successfully
       submitForSettlement: true,
-
+      storeInVaultOnSuccess: true
+      
     },
     //Kount 
     deviceData: req.body.device_data

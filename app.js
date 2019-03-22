@@ -7,9 +7,12 @@ var checkout = require('./routes/checkout');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-//ajax//
+var recurringRouter = require('./routes/subscript');
+var subscriptionRouter = require('./routes/branch');
 var createToken = require('./routes/token');
 var createCustomer = require('./routes/customer');
+
+
 var app = express();
 
 // view engine setup
@@ -25,9 +28,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/checkout', checkout);
-//ajax //
+app.use('/sub',recurringRouter);
 app.use('/token', createToken);
 app.use('/customer', createCustomer);
+app.use('/subscription',subscriptionRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
